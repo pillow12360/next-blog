@@ -1,26 +1,31 @@
-// app/components/Header.tsx
 import React from 'react';
 import Link from 'next/link';
 
 const Header: React.FC = () => {
   return (
-    <header className="bg-blue-500 text-white py-4">
-      <nav className="container mx-auto flex justify-between items-center">
-        <Link href="/">
-          {/* Tailwind CSS 스타일링을 적용한 <a> 태그 */}
-          <div className="hover:text-gray-300 transition-colors duration-200">Home</div>
+    <header className="bg-blue-600 shadow-md py-4">
+      <nav className="container mx-auto flex justify-between items-center px-6">
+        <Link
+          href="/"
+          className="text-lg font-semibold hover:text-gray-200 transition-colors duration-200 cursor-pointer"
+        >
+          Home
         </Link>
-        <Link href="/about">
-          {/* 링크에 스타일링 적용 */}
-          <div className="hover:text-gray-300 transition-colors duration-200">About</div>
+        <Link
+          href="/about"
+          className="text-lg font-semibold hover:text-gray-200 transition-colors duration-200 cursor-pointer"
+        >
+          About
         </Link>
-        <Link href="/posts">
-          {/* 링크에 스타일링 적용 */}
-          <div className="hover:text-gray-300 transition-colors duration-200">Posts</div>
+        <Link
+          href="/posts"
+          className="text-lg font-semibold hover:text-gray-200 transition-colors duration-200 cursor-pointer"
+        >
+          Posts
         </Link>
       </nav>
     </header>
   );
-}
+};
 
 export default Header;
