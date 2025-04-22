@@ -1,19 +1,18 @@
-import { Providers } from './providers';
-import { Inter } from 'next/font/google';
+import { GeistMono } from 'geist/font';
+import { fontVariables } from './fonts';
 import './globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
+import { Providers } from './providers';
 
 export default function RootLayout({
-                                       children,
-                                   }: {
-    children: React.ReactNode;
+  children,
+}: {
+  children: React.ReactNode;
 }) {
-    return (
-        <html lang="ko">
-        <body className={inter.className}>
+  return (
+    <html lang="ko" className={`${fontVariables} ${GeistMono.variable}`}>
+      <body className="font-sans">
         <Providers>{children}</Providers>
-        </body>
-        </html>
-    );
+      </body>
+    </html>
+  );
 }
