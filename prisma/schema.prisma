@@ -1,95 +1,105 @@
+// Prisma 클라이언트 생성 설정
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client-js" // Prisma Client JS 사용
 }
 
+// 데이터베이스 연결 설정
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "postgresql" // PostgreSQL 데이터베이스 사용
+  url      = env("DATABASE_URL") // 환경변수에서 DB 연결 URL 가져옴
 }
 
+// 사용자 모델 - 웹사이트 회원 정보
 model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  name      String?
-  image     String?
-  role      Role       @default(USER)
-  comments  Comment[]
-  bookmarks Bookmark[]
-  likes     Like[]
-  posts     Post[]
-  projects  Project[]
-  createdAt DateTime   @default(now())
+  id        String     @id @default(cuid()) // 고유 식별자, CUID 형식 자동 생성
+  email     String     @unique // 이메일 주소, 유일한 값이어야 함
+  name      String?    // 사용자 이름, 선택 사항
+  image     String?    // 프로필 이미지 URL, 선택 사항
+  role      Role       @default(USER) // 사용자 권한, 기본값은 일반 사용자
+  comments  Comment[]  // 사용자가 작성한 댓글 목록 (1:N 관계)
+  bookmarks Bookmark[] // 사용자가 북마크한 게시물 목록 (1:N 관계)
+  likes     Like[]     // 사용자가 좋아요한 게시물 목록 (1:N 관계)
+  posts     Post[]     // 사용자가 작성한 게시물 목록 (1:N 관계)
+  projects  Project[]  // 사용자가 등록한 프로젝트 목록 (1:N 관계)
+  createdAt DateTime   @default(now()) // 계정 생성 시간, 자동 기록
 }
 
+// 사용자 권한 열거형
 enum Role {
-  USER
-  ADMIN
+  USER  // 일반 사용자 권한
+  ADMIN // 관리자 권한
 }
 
+// 게시물 모델 - 블로그 포스트 정보
 model Post {
-  id        String     @id @default(cuid())
-  title     String
-  slug      String     @unique
-  content   String
-  thumbnail String?
-  viewCount Int        @default(0)
-  authorId  String
-  author    User       @relation(fields: [authorId], references: [id])
-  tags      Tag[]      @relation("PostTags")
-  comments  Comment[]
-  likes     Like[]
-  bookmarks Bookmark[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id        String     @id @default(cuid()) // 고유 식별자, CUID 형식 자동 생성
+  title     String     // 게시물 제목
+  slug      String     @unique // URL에 사용될 고유 문자열
+  content   String     // 게시물 내용, 마크다운 또는 HTML 형식
+  thumbnail String?    // 썸네일 이미지 URL, 선택 사항
+  viewCount Int        @default(0) // 조회수, 기본값 0
+  authorId  String     // 작성자 ID (User 모델 참조)
+  author    User       @relation(fields: [authorId], references: [id]) // User 모델과의 관계 설정
+  tags      Tag[]      @relation("PostTags") // 게시물에 할당된 태그 목록 (N:M 관계)
+  comments  Comment[]  // 게시물에 달린 댓글 목록 (1:N 관계)
+  likes     Like[]     // 게시물의 좋아요 목록 (1:N 관계)
+  bookmarks Bookmark[] // 게시물을 북마크한 사용자 목록 (1:N 관계)
+  createdAt DateTime   @default(now()) // 게시물 작성 시간, 자동 기록
+  updatedAt DateTime   @updatedAt // 게시물 수정 시간, 자동 업데이트
 }
 
+// 댓글 모델 - 게시물에 대한 댓글 정보
 model Comment {
-  id        String    @id @default(cuid())
-  content   String
-  userId    String
-  postId    String
-  parentId  String?
-  user      User      @relation(fields: [userId], references: [id])
-  post      Post      @relation(fields: [postId], references: [id])
-  parent    Comment?  @relation("ReplyRelation", fields: [parentId], references: [id])
-  replies   Comment[] @relation("ReplyRelation")
-  createdAt DateTime  @default(now())
+  id        String    @id @default(cuid()) // 고유 식별자, CUID 형식 자동 생성
+  content   String    // 댓글 내용
+  userId    String    // 작성자 ID (User 모델 참조)
+  postId    String    // 게시물 ID (Post 모델 참조)
+  parentId  String?   // 부모 댓글 ID, 대댓글인 경우에만 값 존재
+  user      User      @relation(fields: [userId], references: [id]) // User 모델과의 관계 설정
+  post      Post      @relation(fields: [postId], references: [id]) // Post 모델과의 관계 설정
+  parent    Comment?  @relation("ReplyRelation", fields: [parentId], references: [id]) // 부모 댓글과의 관계 설정
+  replies   Comment[] @relation("ReplyRelation") // 이 댓글에 달린 대댓글 목록 (1:N 관계)
+  createdAt DateTime  @default(now()) // 댓글 작성 시간, 자동 기록
 }
 
+// 태그 모델 - 게시물 분류를 위한 태그 정보
 model Tag {
-  id    String @id @default(cuid())
-  name  String @unique
-  posts Post[] @relation("PostTags")
+  id    String @id @default(cuid()) // 고유 식별자, CUID 형식 자동 생성
+  name  String @unique // 태그 이름, 유일한 값이어야 함
+  posts Post[] @relation("PostTags") // 이 태그가 할당된 게시물 목록 (N:M 관계)
 }
 
+// 북마크 모델 - 사용자가 북마크한 게시물 정보
 model Bookmark {
-  id        String   @id @default(cuid())
-  userId    String
-  postId    String
-  user      User     @relation(fields: [userId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
-  createdAt DateTime @default(now())
+  id        String   @id @default(cuid()) // 고유 식별자, CUID 형식 자동 생성
+  userId    String   // 사용자 ID (User 모델 참조)
+  postId    String   // 게시물 ID (Post 모델 참조)
+  user      User     @relation(fields: [userId], references: [id]) // User 모델과의 관계 설정
+  post      Post     @relation(fields: [postId], references: [id]) // Post 모델과의 관계 설정
+  createdAt DateTime @default(now()) // 북마크 생성 시간, 자동 기록
 }
 
+// 좋아요 모델 - 사용자가 좋아요한 게시물 정보
 model Like {
-  id        String   @id @default(cuid())
-  userId    String
-  postId    String
-  user      User     @relation(fields: [userId], references: [id])
-  post      Post     @relation(fields: [postId], references: [id])
-  createdAt DateTime @default(now())
+  id        String   @id @default(cuid()) // 고유 식별자, CUID 형식 자동 생성
+  userId    String   // 사용자 ID (User 모델 참조)
+  postId    String   // 게시물 ID (Post 모델 참조)
+  user      User     @relation(fields: [userId], references: [id]) // User 모델과의 관계 설정
+  post      Post     @relation(fields: [postId], references: [id]) // Post 모델과의 관계 설정
+  createdAt DateTime @default(now()) // 좋아요 생성 시간, 자동 기록
 }
 
+// 프로젝트 모델 - 포트폴리오 프로젝트 정보
 model Project {
-  id          String   @id @default(cuid())
-  title       String
-  description String
-  image       String?
-  githubUrl   String?
-  liveUrl     String?
-  techStack   Json // ["Next.js", "TypeScript", ...] 형태로 저장
-  authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String   @id @default(cuid()) // 고유 식별자, CUID 형식 자동 생성
+  title       String   // 프로젝트 제목
+  description String   // 프로젝트 설명
+  image       String?  // 프로젝트 이미지 URL, 선택 사항
+  githubUrl   String?  // GitHub 저장소 URL, 선택 사항
+  liveUrl     String?  // 라이브 데모 URL, 선택 사항
+  techStack   Json     // 사용된 기술 스택, JSON 배열 형태로 저장 (예: ["Next.js", "TypeScript", ...])
+  authorId    String   // 작성자 ID (User 모델 참조)
+  author      User     @relation(fields: [authorId], references: [id]) // User 모델과의 관계 설정
+  createdAt   DateTime @default(now()) // 프로젝트 생성 시간, 자동 기록
+  updatedAt   DateTime @updatedAt // 프로젝트 수정 시간, 자동 업데이트
 }
