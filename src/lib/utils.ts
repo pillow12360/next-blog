@@ -1,4 +1,9 @@
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 /**
  * 문자열을 URL에 적합한 슬러그 형태로 변환
  */
