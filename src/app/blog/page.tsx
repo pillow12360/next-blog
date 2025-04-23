@@ -43,7 +43,7 @@ export default async function BlogPage({
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold mb-8">동찬 블로그</h1>
 
-            <Link href={'/blog/create'}><Button>새 게시글 작성</Button></Link>
+            <Link href={'/admin/posts/write'}><Button>새 게시글 작성</Button></Link>
 
             {/* 검색 및 필터링 컴포넌트 */}
             <SearchFilter initialFilter={filter} />
