@@ -6,6 +6,8 @@ import PostList from './components/PostList';
 import PostListSkeleton from './components/PostListSkeleton';
 import SearchFilter from './components/SearchFilter';
 import * as blogService from '@/modules/blog/blog.service';
+import {Button} from "@/components/ui/button";
+import Link from "next/link";
 
 // 페이지 컴포넌트는 동적 라우팅에 의존하지 않도록 설정
 export const dynamic = 'force-dynamic';
@@ -39,7 +41,9 @@ export default async function BlogPage({
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-8">블로그</h1>
+            <h1 className="text-3xl font-bold mb-8">동찬 블로그</h1>
+
+            <Link href={'/blog/create'}><Button>새 게시글 작성</Button></Link>
 
             {/* 검색 및 필터링 컴포넌트 */}
             <SearchFilter initialFilter={filter} />

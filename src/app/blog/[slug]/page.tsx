@@ -1,4 +1,3 @@
-// src/app/blog/[slug]/page.tsx
 import React, { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { Metadata, ResolvingMetadata } from 'next';
@@ -36,7 +35,9 @@ export async function generateMetadata(
     }
 }
 
+
 // 테스트 데이터 - 실제로는 DB에서 가져와야 함
+/*
 const dummyComments = [
     {
         id: 'comment1',
@@ -72,6 +73,7 @@ const dummyComments = [
         replies: []
     }
 ];
+*/
 
 // 포스트 데이터 가져오기 (테스트 데이터 추가)
 async function getPost(slug: string) {
@@ -81,11 +83,11 @@ async function getPost(slug: string) {
         // 테스트를 위해 댓글 데이터 추가
         return {
             ...post,
-            comments: dummyComments,
+            comments: post.comments,
             _count: {
                 ...post._count,
-                comments: dummyComments.length +
-                    dummyComments.reduce((acc, comment) => acc + comment.replies.length, 0)
+                comments: post.comments.length +
+                    post.comments.reduce((acc, comment) => acc + comment.replies.length, 0)
             }
         };
     } catch (error) {
@@ -98,15 +100,6 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     return (
         <div className="container mx-auto px-4 py-8">
             <BackButton href="/blog" className="mb-6">블로그 목록으로 돌아가기</BackButton>
-
-            {/* 테스트 모드 안내 */}
-            <div className="mb-8 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <h2 className="text-lg font-semibold text-yellow-700 mb-2">🧪 테스트 모드</h2>
-                <p className="text-yellow-700">
-                    현재 인증 기능이 구현되지 않아 테스트 모드로 실행 중입니다.
-                    '테스트 로그인하기' 버튼을 클릭하여 댓글 및 좋아요 기능을 테스트해볼 수 있습니다.
-                </p>
-            </div>
 
             {/* 포스트 상세 내용 */}
             <Suspense fallback={<PostDetailSkeleton />}>
