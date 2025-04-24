@@ -2,7 +2,7 @@
 
 // src/components/layout/ClientNavigation.tsx
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -51,6 +51,11 @@ export function ClientNavigation() {
         { name: "블로그", href: "/blog", icon: Newspaper },
         { name: "연락처", href: "/contact", icon: Mail },
     ];
+    const router = useRouter(); // 추가: router 정의
+
+    const handleLoginClick = () => {
+        router.push("/login");
+    };
 
     return (
         <div className="flex w-full items-center justify-between">
@@ -124,7 +129,7 @@ export function ClientNavigation() {
                             <DropdownMenuLabel>{isAdmin === true ? "관리자 " : "방문자 "}{session.user?.name}</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
-                                <Link href="/profile">프로필</Link>
+                                <Link href="/profile" className="..." scroll={false}>프로필</Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={() => signOut()}>
                                 로그아웃
@@ -132,7 +137,9 @@ export function ClientNavigation() {
                         </DropdownMenuContent>
                     </DropdownMenu>
                 ) : (
-                    <Button onClick={loginHandler}>로그인</Button>
+                    <Button onClick={handleLoginClick}>
+                        로그인
+                    </Button>
                 )}
 
                 {/* 모바일 메뉴 토글 버튼 */}

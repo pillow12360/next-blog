@@ -32,13 +32,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         async session({ session, token }) {
             if (token && session.user) {
                 session.user.id = token.id;
-                session.user.role = token.role; // ✅ session에 role 전달
+                session.user.role = token.role;
             }
             return session;
         }
     },
     pages: {
-        // signIn: '/login',
+        signIn: '/login',
     },
     secret: process.env.NEXTAUTH_SECRET,
 });
