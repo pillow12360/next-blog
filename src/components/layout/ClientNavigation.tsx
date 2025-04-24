@@ -10,6 +10,7 @@ import { Menu, X, Sun, Moon, Home, User, Briefcase, Newspaper, Mail } from "luci
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { MobileMenu } from "./MobileMenu";
+import {signIn, signOut, useSession} from "next-auth/react";
 
 /**
  * 네비게이션 컴포넌트 - 클라이언트 컴포넌트
@@ -24,6 +25,14 @@ export function ClientNavigation() {
     const pathname = usePathname();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { theme, setTheme } = useTheme();
+    const loginHandler = () => {
+        signIn();
+    }
+     const  logoutHandler =  () => {
+        signOut();
+    }
+
+    const session = useSession();
 
     // 네비게이션 항목 정의
     const navItems = [
@@ -91,6 +100,8 @@ export function ClientNavigation() {
                     <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     <span className="sr-only">테마 변경</span>
                 </Button>
+
+                {session.status === "authenticated" ? <Button onClick={logoutHandler}>로그아웃</Button> : <Button onClick={loginHandler}>로그인</Button> }
 
                 {/* 모바일 메뉴 토글 버튼 */}
                 <Button

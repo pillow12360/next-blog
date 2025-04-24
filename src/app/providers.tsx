@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useState } from 'react';
 import { createQueryClient } from '@/lib/tanstack-query';
+import { SessionProvider } from 'next-auth/react';
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   // createQueryClient 함수를 사용하여 쿼리 클라이언트 인스턴스 생성

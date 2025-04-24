@@ -3,6 +3,7 @@ import { Metadata } from "next";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { GeistSans } from "geist/font/sans";
 import "./globals.css";
+import {SessionProvider} from "next-auth/react";
 
 // 메타데이터 설정
 export const metadata: Metadata = {
@@ -30,7 +31,9 @@ export default function RootLayout({
     return (
         <html lang="ko" suppressHydrationWarning>
         <body className={GeistSans.className}>
+        <SessionProvider>
         <MainLayout>{children}</MainLayout>
+        </SessionProvider>
         </body>
         </html>
     );
