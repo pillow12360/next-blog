@@ -13,22 +13,32 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         GitHubProvider({
             clientId: process.env.GITHUB_ID!,
             clientSecret: process.env.GITHUB_SECRET!,
-        }),
-        GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID!,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-        }),
+        })
     ],
     callbacks: {
-        async signIn({ user, account, profile }) {
-            // 이메일 필터만 적용하고 통과
+        async signIn({ user }) {
             if (!user.email) return false;
+            return true;
+        },
 
-            return true; // Adapter가 알아서 user/account 생성함
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+                token.role = user.role; // ✅ role 포함
+            }
+            return token;
+        },
+
+        async session({ session, token }) {
+            if (token && session.user) {
+                session.user.id = token.id;
+                session.user.role = token.role; // ✅ session에 role 전달
+            }
+            return session;
         }
     },
     pages: {
-        // signIn: '/login', 
+        // signIn: '/login',
     },
     secret: process.env.NEXTAUTH_SECRET,
 });

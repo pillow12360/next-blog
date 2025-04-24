@@ -11,6 +11,16 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { MobileMenu } from "./MobileMenu";
 import {signIn, signOut, useSession} from "next-auth/react";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 
 /**
  * 네비게이션 컴포넌트 - 클라이언트 컴포넌트
@@ -31,9 +41,8 @@ export function ClientNavigation() {
      const  logoutHandler =  () => {
         signOut();
     }
-
-    const session = useSession();
-
+    const { data: session, status } = useSession();
+    const isAdmin = session?.user?.role === "ADMIN";
     // 네비게이션 항목 정의
     const navItems = [
         { name: "홈", href: "/", icon: Home },
@@ -101,7 +110,30 @@ export function ClientNavigation() {
                     <span className="sr-only">테마 변경</span>
                 </Button>
 
-                {session.status === "authenticated" ? <Button onClick={logoutHandler}>로그아웃</Button> : <Button onClick={loginHandler}>로그인</Button> }
+                {status === "authenticated" ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Avatar className="h-8 w-8 cursor-pointer">
+                                <AvatarImage src={session.user?.image ?? ""} alt={session.user?.name ?? "사용자"} />
+                                <AvatarFallback>
+                                    {session.user?.name?.charAt(0) ?? "U"}
+                                </AvatarFallback>
+                            </Avatar>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-48">
+                            <DropdownMenuLabel>{isAdmin === true ? "관리자 " : "방문자 "}{session.user?.name}</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem asChild>
+                                <Link href="/profile">프로필</Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => signOut()}>
+                                로그아웃
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <Button onClick={loginHandler}>로그인</Button>
+                )}
 
                 {/* 모바일 메뉴 토글 버튼 */}
                 <Button
