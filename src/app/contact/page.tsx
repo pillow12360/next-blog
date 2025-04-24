@@ -1,9 +1,9 @@
 import Link from 'next/link';
 
-export default function Home() {
+export default function ContactPage() {
   return (
       <div>
-        홈페이지
+        연락처
       </div>
   );
 }

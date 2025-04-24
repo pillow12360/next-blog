@@ -1,9 +1,9 @@
 import Link from 'next/link';
 
-export default function Home() {
+export default function AboutPage() {
   return (
       <div>
-        홈페이지
+        소개
       </div>
   );
 }

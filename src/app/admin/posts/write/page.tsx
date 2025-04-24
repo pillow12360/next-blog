@@ -1,16 +1,18 @@
 // src/app/admin/posts/write/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { X, Image as ImageIcon } from "lucide-react";
+import { X, Image as ImageIcon, Loader2 } from "lucide-react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import TiptapEditor from "./TiptapEditor"; // 커스텀 Tiptap 에디터 컴포넌트
+import { createPost, saveDraft } from "./actions"; // 서버 액션 임포트
+import { toast } from "sonner"; // 알림을 위한 toast 컴포넌트 (설치 필요)
 
 // 폼 데이터 타입 정의
 interface PostFormData {
@@ -24,9 +26,13 @@ interface PostFormData {
  * 게시글 작성 페이지 컴포넌트
  *
  * React Hook Form과 Tiptap 에디터를 활용한 블로그 게시글 작성 페이지
+ * 서버 액션을 통해 게시글 저장 구현
  */
 export default function WritePostPage() {
     const router = useRouter();
+    const [isPending, startTransition] = useTransition(); // 서버 액션 실행 상태 관리
+    const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // React Hook Form 설정
     const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm<PostFormData>({
@@ -75,43 +81,58 @@ export default function WritePostPage() {
         }
     };
 
+    // 임시 저장 핸들러
+    const handleSaveDraft = () => {
+        const formData = new FormData();
+        const { title, content } = watch();
+
+        formData.append("title", title || "제목 없음");
+        formData.append("content", content || "");
+
+        startTransition(async () => {
+            const result = await saveDraft(formData);
+            if (result.success) {
+                toast.success("임시 저장되었습니다.");
+            } else {
+                toast.error(result.error || "임시 저장에 실패했습니다.");
+            }
+        });
+    };
+
     // 폼 제출 핸들러
     const onSubmit: SubmitHandler<PostFormData> = async (data) => {
-        try {
-            // FormData 객체 생성 (서버로 전송하기 위한 형식)
-            const formData = new FormData();
-            formData.append("title", data.title);
-            formData.append("content", data.content);
-            formData.append("tags", JSON.stringify(data.tags));
+        // FormData 객체 생성 (서버로 전송하기 위한 형식)
+        const formData = new FormData();
+        formData.append("title", data.title);
+        formData.append("content", data.content);
+        formData.append("tags", JSON.stringify(data.tags));
 
-            if (data.thumbnail) {
-                formData.append("thumbnail", data.thumbnail);
-            }
-
-            // 여기서 API 호출하여 게시글 저장 로직 구현 (생략)
-            console.log("폼 데이터:", {
-                title: data.title,
-                content: data.content,
-                tags: data.tags,
-                thumbnail: data.thumbnail ? data.thumbnail.name : null
-            });
-
-            // TODO: 실제 API 호출 코드
-            // const response = await fetch('/api/posts', {
-            //   method: 'POST',
-            //   body: formData,
-            // });
-
-            // 성공 시 게시글 목록으로 이동
-            // if (response.ok) {
-            //   router.push("/admin/posts");
-            // }
-
-            alert("게시글 작성 기능은 구현되지 않았습니다. (UI 데모만 제공)");
-        } catch (error) {
-            console.error("게시글 저장 중 오류 발생:", error);
-            alert("게시글 저장에 실패했습니다.");
+        if (data.thumbnail) {
+            formData.append("thumbnail", data.thumbnail);
         }
+
+        setError(null);
+        setIsSubmitting(true);
+
+        try {
+            const result = await createPost(formData);
+
+            if (result.success) {
+                // 성공 시 클라이언트에서 리다이렉트
+                toast.success('게시글이 성공적으로 저장되었습니다!');
+                router.push('/blog');
+            } else {
+                // 실패 시 에러 메시지 표시
+                setError(result.error || '알 수 없는 오류가 발생했습니다.');
+                toast.error(result.error || '알 수 없는 오류가 발생했습니다.');
+            }
+        } catch (error) {
+            console.error('폼 제출 오류:', error);
+            setError('게시글 저장에 실패했습니다.');
+            toast.error('게시글 저장에 실패했습니다.');
+        } finally {
+            setIsSubmitting(false);
+        };
     };
 
     return (
@@ -123,6 +144,13 @@ export default function WritePostPage() {
 
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <CardContent className="space-y-6">
+                        {/* 에러 메시지 표시 */}
+                        {error && (
+                            <div className="bg-red-50 border border-red-200 rounded-md p-3 text-red-600">
+                                {error}
+                            </div>
+                        )}
+
                         {/* 제목 입력 */}
                         <div className="space-y-2">
                             <Label htmlFor="title" className="text-base font-medium">
@@ -248,14 +276,37 @@ export default function WritePostPage() {
                     </CardContent>
 
                     <CardFooter className="flex justify-between border-t pt-6">
+                        <div className="flex gap-3">
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => router.back()}
+                            >
+                                취소
+                            </Button>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={handleSaveDraft}
+                                disabled={isPending}
+                            >
+                                임시 저장
+                            </Button>
+                        </div>
                         <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() => router.back()}
+                            type="submit"
+                            disabled={isPending}
+                            className="min-w-28"
                         >
-                            취소
+                            {isPending ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    저장 중...
+                                </>
+                            ) : (
+                                "게시글 저장"
+                            )}
                         </Button>
-                        <Button type="submit">게시글 저장</Button>
                     </CardFooter>
                 </form>
             </Card>
