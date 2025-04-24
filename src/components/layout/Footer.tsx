@@ -16,7 +16,6 @@ export function Footer() {
         <footer className="border-t bg-muted/40 w-full">
             <div className="container w-full mx-auto px-4 py-8 md:py-12">
                 <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                    {/* 소개 및 카피라이트 */}
                     <div className="space-y-3">
                         <div className="font-bold text-lg">Portfolio</div>
                         <p className="text-sm text-muted-foreground leading-relaxed">
@@ -66,9 +65,9 @@ export function Footer() {
                     <div className="space-y-3">
                         <div className="font-semibold">연락처</div>
                         <div className="text-sm text-muted-foreground space-y-2">
-                            <p>서울특별시 강남구</p>
-                            <p>email@example.com</p>
-                            <p>010-1234-5678</p>
+                            <p>서울특별시 중랑구</p>
+                            <p>pillow12360@gmail.com</p>
+                            <p>010-6663-1256</p>
                         </div>
                     </div>
 
@@ -104,7 +103,7 @@ export function Footer() {
                                 <span className="sr-only">LinkedIn</span>
                             </Link>
                             <Link
-                                href="mailto:email@example.com"
+                                href="mailto:pillow12360@gmail.com"
                                 className="p-2 rounded-full hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
                             >
                                 <Mail className="h-5 w-5" />
