@@ -43,73 +43,261 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* 기본 테마 (라이트 모드) */
 :root {
   --radius: 0.625rem;
+  /* 바탕 색상 */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+
+  /* 주요 색상 - 파란색 계열로 변경 */
+  --primary: oklch(0.55 0.2 250); /* 파란색 */
+  --primary-foreground: oklch(0.98 0 0);
+
+  /* 보조 색상 및 강조 색상 */
+  --secondary: oklch(0.96 0.03 250); /* 연한 파란색 */
+  --secondary-foreground: oklch(0.2 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
+  --accent: oklch(0.9 0.1 250); /* 연한 파란색 강조 */
+  --accent-foreground: oklch(0.2 0 0);
+
+  /* 기타 UI 색상 */
+  --destructive: oklch(0.65 0.25 25); /* 빨간색 */
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
+  --ring: oklch(0.55 0.2 250); /* 파란색과 동일 */
+
+  /* 차트 색상 */
+  --chart-1: oklch(0.65 0.22 250); /* 파란색 */
+  --chart-2: oklch(0.6 0.2 190); /* 청록색 */
+  --chart-3: oklch(0.5 0.2 160); /* 녹색 */
+  --chart-4: oklch(0.65 0.19 85); /* 노란색 */
+  --chart-5: oklch(0.65 0.2 25); /* 빨간색 */
+
+  /* 사이드바 색상 */
+  --sidebar: oklch(0.97 0.03 250); /* 연한 파란색 배경 */
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar-primary: oklch(0.55 0.2 250); /* 파란색 */
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.9 0.1 250); /* 연한 파란색 강조 */
+  --sidebar-accent-foreground: oklch(0.2 0 0);
+  --sidebar-border: oklch(0.9 0.05 250);
+  --sidebar-ring: oklch(0.55 0.2 250); /* 파란색과 동일 */
 }
 
+/* 다크 테마 색상 */
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
+  --background: oklch(0.15 0 0);
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.2 0 0);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.2 0 0);
+  --popover-foreground: oklch(0.98 0 0);
+
+  /* 주요 색상 - 더 밝은 파란색으로 변경 */
+  --primary: oklch(0.65 0.25 250); /* 밝은 파란색 */
+  --primary-foreground: oklch(0.1 0 0);
+
+  /* 보조 색상 및 강조 색상 */
+  --secondary: oklch(0.25 0.05 250); /* 어두운 파란색 */
+  --secondary-foreground: oklch(0.98 0 0);
+  --muted: oklch(0.25 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+  --accent: oklch(0.3 0.1 250); /* 어두운 파란색 강조 */
+  --accent-foreground: oklch(0.98 0 0);
+
+  /* 기타 UI 색상 */
+  --destructive: oklch(0.7 0.2 20); /* 빨간색 */
+  --border: oklch(1 0 0 / 15%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --ring: oklch(0.65 0.25 250); /* 파란색과 동일 */
+
+  /* 차트 색상 - 다크모드에서 더 밝고 선명하게 */
+  --chart-1: oklch(0.65 0.25 250); /* 파란색 */
+  --chart-2: oklch(0.7 0.2 190); /* 청록색 */
+  --chart-3: oklch(0.6 0.2 160); /* 녹색 */
+  --chart-4: oklch(0.75 0.2 85); /* 노란색 */
+  --chart-5: oklch(0.7 0.25 25); /* 빨간색 */
+
+  /* 사이드바 색상 */
+  --sidebar: oklch(0.2 0.02 250); /* 어두운 파란색 배경 */
+  --sidebar-foreground: oklch(0.98 0 0);
+  --sidebar-primary: oklch(0.65 0.25 250); /* 밝은 파란색 */
+  --sidebar-primary-foreground: oklch(0.1 0 0);
+  --sidebar-accent: oklch(0.3 0.1 250); /* 어두운 파란색 강조 */
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(1 0 0 / 15%);
+  --sidebar-ring: oklch(0.65 0.25 250); /* 파란색과 동일 */
+}
+
+/* 테마 변형: 보라색 계열 */
+.theme-purple {
+  /* 주요 색상 - 보라색 계열로 변경 */
+  --primary: oklch(0.55 0.25 290); /* 보라색 */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.96 0.05 290); /* 연한 보라색 */
+  --secondary-foreground: oklch(0.2 0 0);
+  --accent: oklch(0.9 0.1 290); /* 연한 보라색 강조 */
+  --accent-foreground: oklch(0.2 0 0);
+  --ring: oklch(0.55 0.25 290);
+
+  /* 차트 색상 */
+  --chart-1: oklch(0.65 0.25 290); /* 보라색 */
+  --chart-2: oklch(0.6 0.2 240); /* 파란색 */
+  --chart-3: oklch(0.5 0.2 160); /* 녹색 */
+  --chart-4: oklch(0.65 0.2 85); /* 노란색 */
+  --chart-5: oklch(0.65 0.25 25); /* 빨간색 */
+
+  /* 사이드바 색상 */
+  --sidebar: oklch(0.97 0.03 290);
+  --sidebar-primary: oklch(0.55 0.25 290);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.9 0.1 290);
+  --sidebar-accent-foreground: oklch(0.2 0 0);
+  --sidebar-border: oklch(0.9 0.05 290);
+  --sidebar-ring: oklch(0.55 0.25 290);
+}
+
+/* 다크 모드에서 보라색 테마 */
+.dark.theme-purple {
+  --primary: oklch(0.65 0.28 290); /* 밝은 보라색 */
+  --primary-foreground: oklch(0.1 0 0);
+  --secondary: oklch(0.25 0.08 290); /* 어두운 보라색 */
+  --secondary-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.3 0.12 290); /* 어두운 보라색 강조 */
+  --accent-foreground: oklch(0.98 0 0);
+  --ring: oklch(0.65 0.28 290);
+
+  /* 차트 색상 - 다크모드에서 더 밝고 선명하게 */
+  --chart-1: oklch(0.65 0.28 290); /* 보라색 */
+  --chart-2: oklch(0.7 0.25 240); /* 파란색 */
+  --chart-3: oklch(0.6 0.2 160); /* 녹색 */
+  --chart-4: oklch(0.75 0.2 85); /* 노란색 */
+  --chart-5: oklch(0.7 0.25 25); /* 빨간색 */
+
+  /* 사이드바 색상 */
+  --sidebar: oklch(0.2 0.04 290);
+  --sidebar-primary: oklch(0.65 0.28 290);
+  --sidebar-primary-foreground: oklch(0.1 0 0);
+  --sidebar-accent: oklch(0.3 0.12 290);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(1 0 0 / 15%);
+  --sidebar-ring: oklch(0.65 0.28 290);
+}
+
+/* 테마 변형: 녹색 계열 */
+.theme-green {
+  /* 주요 색상 - 녹색 계열로 변경 */
+  --primary: oklch(0.55 0.18 150); /* 녹색 */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.96 0.04 150); /* 연한 녹색 */
+  --secondary-foreground: oklch(0.2 0 0);
+  --accent: oklch(0.9 0.08 150); /* 연한 녹색 강조 */
+  --accent-foreground: oklch(0.2 0 0);
+  --ring: oklch(0.55 0.18 150);
+
+  /* 차트 색상 */
+  --chart-1: oklch(0.65 0.18 150); /* 녹색 */
+  --chart-2: oklch(0.6 0.18 190); /* 청록색 */
+  --chart-3: oklch(0.5 0.18 110); /* 연두색 */
+  --chart-4: oklch(0.65 0.18 85); /* 노란색 */
+  --chart-5: oklch(0.65 0.2 25); /* 빨간색 */
+
+  /* 사이드바 색상 */
+  --sidebar: oklch(0.97 0.03 150);
+  --sidebar-primary: oklch(0.55 0.18 150);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.9 0.08 150);
+  --sidebar-accent-foreground: oklch(0.2 0 0);
+  --sidebar-border: oklch(0.9 0.04 150);
+  --sidebar-ring: oklch(0.55 0.18 150);
+}
+
+/* 다크 모드에서 녹색 테마 */
+.dark.theme-green {
+  --primary: oklch(0.65 0.22 150); /* 밝은 녹색 */
+  --primary-foreground: oklch(0.1 0 0);
+  --secondary: oklch(0.25 0.06 150); /* 어두운 녹색 */
+  --secondary-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.3 0.1 150); /* 어두운 녹색 강조 */
+  --accent-foreground: oklch(0.98 0 0);
+  --ring: oklch(0.65 0.22 150);
+
+  /* 차트 색상 - 다크모드에서 더 밝고 선명하게 */
+  --chart-1: oklch(0.65 0.22 150); /* 녹색 */
+  --chart-2: oklch(0.7 0.22 190); /* 청록색 */
+  --chart-3: oklch(0.6 0.22 110); /* 연두색 */
+  --chart-4: oklch(0.75 0.2 85); /* 노란색 */
+  --chart-5: oklch(0.7 0.25 25); /* 빨간색 */
+
+  /* 사이드바 색상 */
+  --sidebar: oklch(0.2 0.03 150);
+  --sidebar-primary: oklch(0.65 0.22 150);
+  --sidebar-primary-foreground: oklch(0.1 0 0);
+  --sidebar-accent: oklch(0.3 0.1 150);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(1 0 0 / 15%);
+  --sidebar-ring: oklch(0.65 0.22 150);
+}
+
+/* 테마 변형: 오렌지 계열 */
+.theme-orange {
+  /* 주요 색상 - 오렌지 계열로 변경 */
+  --primary: oklch(0.65 0.23 60); /* 오렌지 */
+  --primary-foreground: oklch(0.98 0 0);
+  --secondary: oklch(0.96 0.05 60); /* 연한 오렌지 */
+  --secondary-foreground: oklch(0.2 0 0);
+  --accent: oklch(0.9 0.1 60); /* 연한 오렌지 강조 */
+  --accent-foreground: oklch(0.2 0 0);
+  --ring: oklch(0.65 0.23 60);
+
+  /* 차트 색상 */
+  --chart-1: oklch(0.65 0.23 60); /* 오렌지 */
+  --chart-2: oklch(0.6 0.22 30); /* 빨간색 */
+  --chart-3: oklch(0.5 0.2 90); /* 노란색 */
+  --chart-4: oklch(0.5 0.15 150); /* 녹색 */
+  --chart-5: oklch(0.5 0.2 250); /* 파란색 */
+
+  /* 사이드바 색상 */
+  --sidebar: oklch(0.97 0.03 60);
+  --sidebar-primary: oklch(0.65 0.23 60);
+  --sidebar-primary-foreground: oklch(0.98 0 0);
+  --sidebar-accent: oklch(0.9 0.1 60);
+  --sidebar-accent-foreground: oklch(0.2 0 0);
+  --sidebar-border: oklch(0.9 0.05 60);
+  --sidebar-ring: oklch(0.65 0.23 60);
+}
+
+/* 다크 모드에서 오렌지 테마 */
+.dark.theme-orange {
+  --primary: oklch(0.7 0.26 60); /* 밝은 오렌지 */
+  --primary-foreground: oklch(0.1 0 0);
+  --secondary: oklch(0.25 0.08 60); /* 어두운 오렌지 */
+  --secondary-foreground: oklch(0.98 0 0);
+  --accent: oklch(0.3 0.12 60); /* 어두운 오렌지 강조 */
+  --accent-foreground: oklch(0.98 0 0);
+  --ring: oklch(0.7 0.26 60);
+
+  /* 차트 색상 - 다크모드에서 더 밝고 선명하게 */
+  --chart-1: oklch(0.7 0.26 60); /* 오렌지 */
+  --chart-2: oklch(0.7 0.25 30); /* 빨간색 */
+  --chart-3: oklch(0.7 0.23 90); /* 노란색 */
+  --chart-4: oklch(0.6 0.18 150); /* 녹색 */
+  --chart-5: oklch(0.6 0.22 250); /* 파란색 */
+
+  /* 사이드바 색상 */
+  --sidebar: oklch(0.2 0.04 60);
+  --sidebar-primary: oklch(0.7 0.26 60);
+  --sidebar-primary-foreground: oklch(0.1 0 0);
+  --sidebar-accent: oklch(0.3 0.12 60);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(1 0 0 / 15%);
+  --sidebar-ring: oklch(0.7 0.26 60);
 }
 
 @layer base {
