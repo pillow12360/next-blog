@@ -41,7 +41,6 @@ const nextConfig: NextConfig = {
 
     // 기타 Next.js 설정
     reactStrictMode: true,
-    swcMinify: true,
 };
 
 export default nextConfig;

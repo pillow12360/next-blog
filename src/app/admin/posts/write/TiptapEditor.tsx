@@ -78,7 +78,18 @@ const TiptapEditor = ({ value, onChange }: TiptapEditorProps) => {
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
         },
+        autofocus: true,
+        editorProps: {
+            attributes: {
+                class: "prose",
+            },
+        },
+        /**
+         * SSR 환경에서 hydration mismatch 방지
+         */
+        immediatelyRender: false,
     });
+
 
     // 이미지 추가 핸들러
     const addImage = useCallback(() => {
