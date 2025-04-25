@@ -8,7 +8,7 @@ import SearchFilter from './components/SearchFilter';
 import * as blogService from '@/modules/blog/blog.service';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { PlusCircle, Newspaper, Tag } from "lucide-react";
+import { PlusCircle, Newspaper, Tag, Filter } from "lucide-react";
 
 // 페이지 컴포넌트는 동적 라우팅에 의존하지 않도록 설정
 export const dynamic = 'force-dynamic';
@@ -37,7 +37,11 @@ async function getPopularTags() {
     }
 }
 
-// 블로그 메인 페이지 컴포넌트
+/**
+ * 블로그 메인 페이지 컴포넌트
+ *
+ * 블로그 포스트 목록을 보여주고, 검색과 필터링 기능을 제공합니다.
+ */
 export default async function BlogPage({
                                            searchParams,
                                        }: {
@@ -56,36 +60,22 @@ export default async function BlogPage({
     const popularTags = await getPopularTags();
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <div>
-                    <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">동찬 블로그</h1>
-                    <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">최신 개발 이야기와 프로젝트 경험을 공유합니다</p>
-                </div>
-
-                <Link href="/admin/posts/write">
-                    <Button size="lg" className="flex items-center gap-2">
-                        <PlusCircle size={18} />
-                        새 게시글 작성
-                    </Button>
-                </Link>
-            </div>
-
+        <div className="container mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* 사이드바: 태그 및 필터링 */}
                 <div className="lg:col-span-1 order-last lg:order-first">
-                    <div className="sticky top-8 space-y-6">
+                    <div className="sticky top-24 space-y-6">
                         {/* 검색 및 필터링 컴포넌트 */}
-                        <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border">
+                        <div className="bg-card p-5 rounded-lg shadow-sm border">
                             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                                <Newspaper size={18} />
-                                글 검색하기
+                                <Filter size={18} />
+                                글 검색
                             </h3>
                             <SearchFilter initialFilter={filter} />
                         </div>
 
                         {/* 인기 태그 영역 */}
-                        <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border">
+                        <div className="bg-card p-5 rounded-lg shadow-sm border">
                             <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                                 <Tag size={18} />
                                 인기 태그
@@ -98,7 +88,7 @@ export default async function BlogPage({
                                         className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
                                             filter.tag === tag.name
                                                 ? 'bg-primary text-primary-foreground'
-                                                : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                                : 'bg-muted hover:bg-muted/80'
                                         }`}
                                     >
                                         {tag.name}
@@ -114,7 +104,7 @@ export default async function BlogPage({
                 <div className="lg:col-span-3">
                     {/* 현재 필터 표시 */}
                     <div className="mb-6">
-                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             {filter.tag && (
                                 <div className="flex items-center gap-1.5">
                                     <span>태그:</span>
@@ -127,10 +117,13 @@ export default async function BlogPage({
                                     <span className="font-medium text-primary">"{filter.keyword}"</span>
                                 </div>
                             )}
-                            {(filter.tag || filter.keyword) && (
-                                <Link href="/blog" className="text-sm text-gray-500 underline ml-2">
-                                    필터 초기화
-                                </Link>
+                            {filter.sortBy && filter.sortBy !== 'latest' && (
+                                <div className="flex items-center gap-1.5">
+                                    <span>정렬:</span>
+                                    <span className="font-medium text-primary">
+                                        {filter.sortBy === 'popular' ? '인기순' : '댓글순'}
+                                    </span>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -146,24 +139,26 @@ export default async function BlogPage({
     );
 }
 
-// 데이터를 가져와서 PostList에 전달하는 서버 컴포넌트
+/**
+ * 데이터를 가져와서 PostList에 전달하는 서버 컴포넌트
+ */
 async function PostListWithData({ filter }: { filter: PostSearchFilter }) {
     // 서비스 레이어 직접 호출
     const postsData = await getPosts(filter);
 
     if (postsData.posts.length === 0) {
         return (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-12 text-center">
+            <div className="bg-card rounded-lg shadow-sm border p-12 text-center">
                 <div className="flex flex-col items-center justify-center space-y-3">
-                    <Newspaper className="w-12 h-12 text-gray-300 dark:text-gray-600" />
+                    <Newspaper className="w-12 h-12 text-muted-foreground/30" />
                     <h3 className="text-lg font-medium">포스트가 없습니다</h3>
 
                     {filter.tag || filter.keyword ? (
-                        <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                        <p className="text-muted-foreground max-w-md">
                             검색 조건에 맞는 게시글이 없습니다. 다른 검색어나 태그를 시도해보세요.
                         </p>
                     ) : (
-                        <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                        <p className="text-muted-foreground max-w-md">
                             아직 작성된 게시글이 없습니다. 첫 번째 게시글을 작성해보세요!
                         </p>
                     )}
