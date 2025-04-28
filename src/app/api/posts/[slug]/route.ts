@@ -1,6 +1,7 @@
 // src/app/api/posts/[slug]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import * as blogService from '@/modules/blog/blog.service';
+import {auth} from "@/auth";
 
 /**
  * GET 요청 핸들러 - 포스트 상세 조회

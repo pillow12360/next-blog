@@ -5,16 +5,17 @@ import { redirect } from 'next/navigation';
 import { createNewPost } from '@/modules/blog/blog.api';
 import { uploadImageToStorage } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@/auth';
 
 // 더미 세션 데이터 (인증 시스템 구현 전 임시 사용)
-const dummySession = {
-    user: {
-        email: 'admin@example.com',
-        name: '관리자',
-        role: 'ADMIN',
-        image: '/placeholder-avatar.jpg'
-    }
-};
+// const dummySession = {
+//     user: {
+//         email: 'admin@example.com',
+//         name: '관리자',
+//         role: 'ADMIN',
+//         image: '/placeholder-avatar.jpg'
+//     }
+// };
 
 /**
  * 게시글 작성 서버 액션
@@ -22,7 +23,7 @@ const dummySession = {
 export async function createPost(formData: FormData) {
     try {
         // 실제 인증 대신 더미 세션 사용
-        const session = dummySession;
+        const session = await auth();
 
         if (!session || !session.user) {
             return { success: false, error: '로그인이 필요합니다.' };
@@ -151,7 +152,7 @@ export async function createPost(formData: FormData) {
 export async function saveDraft(formData: FormData) {
     try {
         // 더미 세션 사용
-        const session = dummySession;
+        const session = await auth();
 
         if (!session || !session.user) {
             return { success: false, error: '로그인이 필요합니다.' };
