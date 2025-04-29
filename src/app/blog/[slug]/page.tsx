@@ -6,6 +6,9 @@ import PostDetail from './components/PostDetail';
 import PostDetailSkeleton from './components/PostDetailSkeleton';
 import RelatedPosts from './components/RelatedPosts';
 import BackButton from '@/components/ui/BackButton';
+import {Button} from "@/components/ui/button";
+import {auth} from "@/auth";
+import Link from "next/link";
 
 // 동적 렌더링 설정
 export const dynamic = 'force-dynamic';
@@ -76,6 +79,7 @@ const dummyComments = [
 */
 
 // 포스트 데이터 가져오기 (테스트 데이터 추가)
+
 async function getPost(slug: string) {
     try {
         const post = await blogService.getPostBySlug(slug, true); // 조회수 증가
@@ -97,14 +101,28 @@ async function getPost(slug: string) {
 
 // 블로그 포스트 상세 페이지 컴포넌트
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
+    const session = await auth();
+
+    const post = await blogService.getPostBySlug(params.slug, true);
+
+    const {id} = post.author
+
+    const isWriter = session?.user.id === id;
+
     return (
         <div className="container mx-auto px-4 py-8">
             <BackButton href="/blog" className="mb-6">블로그 목록으로 돌아가기</BackButton>
 
+            {isWriter && (
+                <Button variant={"outline"}><Link href={`/blog/${params.slug}/edit`}>게시글 수정하기</Link></Button>
+            )}
+
             {/* 포스트 상세 내용 */}
             <Suspense fallback={<PostDetailSkeleton />}>
                 <PostDetailWithData slug={params.slug} />
+
             </Suspense>
+
         </div>
     );
 }
