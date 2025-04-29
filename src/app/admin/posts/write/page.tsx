@@ -1,7 +1,6 @@
-// src/app/admin/posts/write/page.tsx
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,10 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { X, Image as ImageIcon, Loader2 } from "lucide-react";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import TiptapEditor from "./TiptapEditor"; // 커스텀 Tiptap 에디터 컴포넌트
-import { createPost, saveDraft } from "./actions"; // 서버 액션 임포트
-import { toast } from "sonner"; // 알림을 위한 toast 컴포넌트 (설치 필요)
+import { saveDraft, testPost } from "./actions"; // 서버 액션 임포트
+import { toast } from "sonner"; // 알림을 위한 toast 컴포넌트
 
 // 폼 데이터 타입 정의
 interface PostFormData {
@@ -32,10 +31,10 @@ export default function WritePostPage() {
     const router = useRouter();
     const [isPending, startTransition] = useTransition(); // 서버 액션 실행 상태 관리
     const [error, setError] = useState<string | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const formRef = useRef<HTMLFormElement>(null);
 
     // React Hook Form 설정
-    const { register, handleSubmit, control, setValue, watch, formState: { errors } } = useForm<PostFormData>({
+    const { register, control, setValue, watch, getValues, formState: { errors } } = useForm<PostFormData>({
         defaultValues: {
             title: "",
             content: "",
@@ -49,6 +48,19 @@ export default function WritePostPage() {
 
     // 썸네일 미리보기 상태
     const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
+
+    // 숨겨진 필드 업데이트 - 값이 변경될 때마다 실행
+    useEffect(() => {
+        const tagsInput = document.getElementById("hidden-tags") as HTMLInputElement;
+        if (tagsInput) {
+            tagsInput.value = JSON.stringify(tags);
+        }
+
+        const contentInput = document.getElementById("hidden-content") as HTMLInputElement;
+        if (contentInput) {
+            contentInput.value = watch("content");
+        }
+    }, [tags, watch("content")]);
 
     // 태그 추가 핸들러
     const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -81,13 +93,30 @@ export default function WritePostPage() {
         }
     };
 
+    // formData 업데이트 함수 - 폼 제출 직전에 호출
+    const updateFormData = () => {
+        if (!formRef.current) return;
+
+        const values = getValues();
+
+        // 숨겨진 필드 업데이트
+        const tagsInput = document.getElementById("hidden-tags") as HTMLInputElement;
+        if (tagsInput) {
+            tagsInput.value = JSON.stringify(values.tags);
+        }
+
+        const contentInput = document.getElementById("hidden-content") as HTMLInputElement;
+        if (contentInput) {
+            contentInput.value = values.content;
+        }
+    };
+
     // 임시 저장 핸들러
     const handleSaveDraft = () => {
-        const formData = new FormData();
-        const { title, content } = watch();
+        if (!formRef.current) return;
 
-        formData.append("title", title || "제목 없음");
-        formData.append("content", content || "");
+        updateFormData();
+        const formData = new FormData(formRef.current);
 
         startTransition(async () => {
             const result = await saveDraft(formData);
@@ -99,41 +128,7 @@ export default function WritePostPage() {
         });
     };
 
-    // 폼 제출 핸들러
-    const onSubmit: SubmitHandler<PostFormData> = async (data) => {
-        // FormData 객체 생성 (서버로 전송하기 위한 형식)
-        const formData = new FormData();
-        formData.append("title", data.title);
-        formData.append("content", data.content);
-        formData.append("tags", JSON.stringify(data.tags));
 
-        if (data.thumbnail) {
-            formData.append("thumbnail", data.thumbnail);
-        }
-
-        setError(null);
-        setIsSubmitting(true);
-
-        try {
-            const result = await createPost(formData);
-
-            if (result.success) {
-                // 성공 시 클라이언트에서 리다이렉트
-                toast.success('게시글이 성공적으로 저장되었습니다!');
-                router.push('/blog');
-            } else {
-                // 실패 시 에러 메시지 표시
-                setError(result.error || '알 수 없는 오류가 발생했습니다.');
-                toast.error(result.error || '알 수 없는 오류가 발생했습니다.');
-            }
-        } catch (error) {
-            console.error('폼 제출 오류:', error);
-            setError('게시글 저장에 실패했습니다.');
-            toast.error('게시글 저장에 실패했습니다.');
-        } finally {
-            setIsSubmitting(false);
-        };
-    };
 
     return (
         <div className="container mx-auto py-8 max-w-4xl">
@@ -142,7 +137,34 @@ export default function WritePostPage() {
                     <CardTitle className="text-2xl font-bold">새 게시글 작성</CardTitle>
                 </CardHeader>
 
-                <form onSubmit={handleSubmit(onSubmit)}>
+                <form
+                    ref={formRef}
+                    onSubmit={async (e) => {
+                        e.preventDefault();
+                        updateFormData();
+                        if (!formRef.current) return;
+                        const formData = new FormData(formRef.current);
+                        try {
+                            const res = await fetch("/api/posts", {
+                                method: "POST",
+                                body: formData,
+                            });
+                            if (!res.ok) {
+                                const errorData = await res.json();
+                                router.push(`/error?type=${errorData.errorType}&message=${encodeURIComponent(errorData.message)}`);
+                            } else {
+                                router.push("/blog");
+                            }
+                        } catch (error) {
+                            console.error("제출 중 에러 발생:", error);
+                            toast.error("게시글 저장에 실패했습니다.");
+                        }
+                    }}
+                >
+                    {/* 숨겨진 필드들 추가 - React Hook Form 값을 서버 액션으로 전달하기 위함 */}
+                    <input type="hidden" id="hidden-tags" name="tags" defaultValue={JSON.stringify(tags)} />
+                    <input type="hidden" id="hidden-content" name="content" defaultValue={watch("content")} />
+
                     <CardContent className="space-y-6">
                         {/* 에러 메시지 표시 */}
                         {error && (
@@ -212,7 +234,14 @@ export default function WritePostPage() {
                                     <div className="min-h-[300px] border rounded-md overflow-hidden">
                                         <TiptapEditor
                                             value={field.value}
-                                            onChange={field.onChange}
+                                            onChange={(value) => {
+                                                field.onChange(value);
+                                                // 숨겨진 필드 업데이트
+                                                const contentInput = document.getElementById("hidden-content") as HTMLInputElement;
+                                                if (contentInput) {
+                                                    contentInput.value = value;
+                                                }
+                                            }}
                                         />
                                     </div>
                                 )}
@@ -231,6 +260,7 @@ export default function WritePostPage() {
                             <div className="border border-dashed rounded-lg p-4 text-center">
                                 <input
                                     id="thumbnail"
+                                    name="thumbnail"
                                     type="file"
                                     accept="image/*"
                                     onChange={handleThumbnailChange}

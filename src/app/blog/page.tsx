@@ -47,13 +47,14 @@ export default async function BlogPage({
                                        }: {
     searchParams: { [key: string]: string | string[] | undefined };
 }) {
+    const params = await searchParams;
     // 필터 구성 - searchParams를 타입 안전하게 사용
     const filter: PostSearchFilter = {
-        keyword: searchParams.keyword as string || '',
-        tag: searchParams.tag as string || '',
-        page: searchParams.page ? parseInt(searchParams.page as string, 10) : 1,
-        limit: searchParams.limit ? parseInt(searchParams.limit as string, 10) : 9, // 한 페이지에 9개 표시
-        sortBy: (searchParams.sortBy as 'latest' | 'popular' | 'comments') || 'latest'
+        keyword: (params.keyword as string) || '',
+        tag: (params.tag as string) || '',
+        page: params.page ? parseInt(params.page as string, 10) : 1,
+        limit: params.limit ? parseInt(params.limit as string, 10) : 9,
+        sortBy: (params.sortBy as 'latest' | 'popular' | 'comments') || 'latest'
     };
 
     // 인기 태그 가져오기

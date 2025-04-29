@@ -16,30 +16,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
         }),
     ],
-    callbacks: {
-        async signIn({ user, account, profile }) {
-            // 디버깅용 로그 추가
-            console.log('로그인 시도:', {
-                user,
-                accountType: account?.provider
-            });
-
-            // 이메일이 없어도 로그인 허용
-            return true;
-        },
-        async jwt({ token, user }) {
-            if (user) {
-                token.id = user.id;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            if (session.user) {
-                session.user.id = token.id as string;
-            }
-            return session;
-        },
+    session: {
+        strategy: "jwt",
     },
+        callbacks: {
+            async jwt({ token, user }) {
+                if (user) {
+                    token.id = user.id;
+                    token.role = (user as any).role ?? "USER"; // 기본 USER
+                }
+                return token;
+            },
+            async session({ session, token }) {
+                if (session.user) {
+                    session.user.id = token.id as string;
+                    (session.user as any).role = token.role;
+                }
+                return session;
+            },
+        },
     pages: {
         signIn: '/login',
         error: '/login/error',  // 에러 페이지 추가
