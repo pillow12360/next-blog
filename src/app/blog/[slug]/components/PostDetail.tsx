@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import CommentSection from './CommentSection';
 import Markdown from '@/components/ui/Markdown';
 import ShareModal from './ShareModal';
+import { useSession } from "next-auth/react";
 
 // 테스트용 더미 인터랙션 데이터
 const dummyInteractions = {
@@ -24,15 +25,8 @@ interface PostDetailProps {
 }
 
 export default function PostDetail({ post }: PostDetailProps) {
-    // 테스트용 더미 유저
-    const dummyUser = {
-        id: 'test-user-id',
-        name: '테스트 사용자',
-        image: 'https://api.dicebear.com/7.x/personas/svg?seed=admin'
-    };
-
-    // 테스트용 로그인 상태
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { data: session } = useSession();
+    const isLoggedIn = !!session?.user;
 
     // 인터랙션 상태
     const [interactions, setInteractions] = useState(dummyInteractions);
@@ -68,24 +62,6 @@ export default function PostDetail({ post }: PostDetailProps) {
 
     return (
         <article className="max-w-4xl mx-auto">
-            {/* 테스트용 로그인 버튼 */}
-            <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                <div className="flex items-center justify-between">
-                    <div className="text-sm text-blue-600">
-                        {isLoggedIn
-                            ? `테스트 모드: ${dummyUser.name}로 로그인됨`
-                            : '테스트 모드: 로그인되지 않음'}
-                    </div>
-                    <Button
-                        onClick={() => setIsLoggedIn(!isLoggedIn)}
-                        variant={isLoggedIn ? "destructive" : "default"}
-                        size="sm"
-                    >
-                        {isLoggedIn ? '로그아웃하기' : '테스트 로그인하기'}
-                    </Button>
-                </div>
-            </div>
-
             {/* 헤더 */}
             <header className="mb-8">
                 {/* 카테고리 & 태그 */}
@@ -206,7 +182,7 @@ export default function PostDetail({ post }: PostDetailProps) {
                 comments={post.comments}
                 totalComments={post._count.comments}
                 isLoggedIn={isLoggedIn}
-                dummyUser={dummyUser}
+                user={session?.user}
             />
 
             {/* 공유 모달 */}
@@ -226,13 +202,18 @@ function CommentSectionTest({
                                 comments,
                                 totalComments,
                                 isLoggedIn,
-                                dummyUser
+                                user,
                             }: {
     postId: string;
     comments: any[];
     totalComments: number;
     isLoggedIn: boolean;
-    dummyUser: any;
+    user?: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    };
 }) {
     const [commentContent, setCommentContent] = useState('');
 
@@ -257,7 +238,7 @@ function CommentSectionTest({
             id: `test-comment-${Date.now()}`,
             content: commentContent,
             createdAt: new Date().toISOString(),
-            user: dummyUser,
+            user: user,
             replies: []
         };
 
