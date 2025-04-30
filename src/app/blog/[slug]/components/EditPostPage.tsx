@@ -94,11 +94,10 @@ export default function EditPostPage({ initialData }: WriteOrEditPostPageProps) 
 
         startTransition(async () => {
             try {
-                const endpoint = isEditMode
-                    ? `/api/posts/${initialData!.id}`  // 수정
-                    : "/api/posts";                    // 작성
+                const endpoint =
+                    `/api/posts/${initialData!.id}`; // 수정
 
-                const method = isEditMode ? "PATCH" : "POST";
+                const method = "POST";
 
                 const res = await fetch(endpoint, { method, body: formData });
 

@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { notFound } from 'next/navigation';
+import {notFound} from 'next/navigation';
 import { Metadata, ResolvingMetadata } from 'next';
 import * as blogService from '@/modules/blog/blog.service';
 import PostDetail from './components/PostDetail';
@@ -9,6 +9,7 @@ import BackButton from '@/components/ui/BackButton';
 import {Button} from "@/components/ui/button";
 import {auth} from "@/auth";
 import Link from "next/link";
+import DeleteButton from './components/DeleteButton'; // 새로 만든 클라이언트 컴포넌트 임포트
 
 // 동적 렌더링 설정
 export const dynamic = 'force-dynamic';
@@ -38,53 +39,11 @@ export async function generateMetadata(
     }
 }
 
-
-// 테스트 데이터 - 실제로는 DB에서 가져와야 함
-/*
-const dummyComments = [
-    {
-        id: 'comment1',
-        content: '정말 좋은 글이네요! 많은 도움이 되었습니다.',
-        createdAt: new Date('2023-11-15T14:30:00').toISOString(),
-        user: {
-            id: 'user1',
-            name: '김철수',
-            image: 'https://api.dicebear.com/7.x/personas/svg?seed=user1'
-        },
-        replies: [
-            {
-                id: 'reply1',
-                content: '감사합니다! 더 좋은 내용으로 찾아뵙겠습니다.',
-                createdAt: new Date('2023-11-15T16:20:00').toISOString(),
-                user: {
-                    id: 'author',
-                    name: '블로그 운영자',
-                    image: 'https://api.dicebear.com/7.x/personas/svg?seed=admin'
-                }
-            }
-        ]
-    },
-    {
-        id: 'comment2',
-        content: '궁금한 점이 있는데요, 이 기술을 실제 프로젝트에 적용할 때 고려해야 할 점은 무엇인가요?',
-        createdAt: new Date('2023-11-16T09:15:00').toISOString(),
-        user: {
-            id: 'user2',
-            name: '박지영',
-            image: 'https://api.dicebear.com/7.x/personas/svg?seed=user2'
-        },
-        replies: []
-    }
-];
-*/
-
-// 포스트 데이터 가져오기 (테스트 데이터 추가)
-
+// 포스트 데이터 가져오기
 async function getPost(slug: string) {
     try {
         const post = await blogService.getPostBySlug(slug, true); // 조회수 증가
 
-        // 테스트를 위해 댓글 데이터 추가
         return {
             ...post,
             comments: post.comments,
@@ -102,27 +61,31 @@ async function getPost(slug: string) {
 // 블로그 포스트 상세 페이지 컴포넌트
 export default async function BlogPostPage({ params }: { params: { slug: string } }) {
     const session = await auth();
-
     const post = await blogService.getPostBySlug(params.slug, true);
-
-    const {id} = post.author
-
+    const {id} = post.author;
+    const {slug} = params;
     const isWriter = session?.user.id === id;
 
     return (
         <div className="container mx-auto px-4 py-8">
             <BackButton href="/blog" className="mb-6">블로그 목록으로 돌아가기</BackButton>
 
-            {isWriter && (
-                <Button variant={"outline"}><Link href={`/blog/${params.slug}/edit`}>게시글 수정하기</Link></Button>
-            )}
+            <div className="flex gap-2 mb-6">
+                {isWriter && (
+                    <Button variant="outline">
+                        <Link href={`/blog/${params.slug}/edit`}>게시글 수정하기</Link>
+                    </Button>
+                )}
+
+                {isWriter && (
+                    <DeleteButton slug={slug} />
+                )}
+            </div>
 
             {/* 포스트 상세 내용 */}
             <Suspense fallback={<PostDetailSkeleton />}>
                 <PostDetailWithData slug={params.slug} />
-
             </Suspense>
-
         </div>
     );
 }
